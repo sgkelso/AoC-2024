@@ -4,7 +4,9 @@
 #include <fstream>
 #include <string>
 #include "stdio.h"
+#include <sstream>
 using namespace std;
+
 
 int main() {
     // FILE* fp = fopen("example.txt", "r");
@@ -15,20 +17,25 @@ int main() {
     int num;
     int safe = 0;
     string line;
-    ifstream file("example.txt");
+    ifstream file("input.txt");
     vector<int> level;
-    bool isSafe = false;
     while (getline(file, line)) {
-        auto test = line.c_str();
-        char k = test[0];
-        while (scanf(test, "%d", &num) == 1) {
+        bool isSafe = true;
+        stringstream ss;
+        int num = 0;
+        ss << line;
+        while (ss >> num) {
             level.push_back(num);
         }
         bool increasing = false;
         int previous;
         for (int i = 0; i < level.size(); i++) {
             if (i == 0) {
-                break;
+                previous = level.at(i);
+                continue;
+            }
+            if(i == 1){
+                increasing = ((level.at(i) - previous) > 0);
             }
             int diff = level.at(i) - previous;
             if (diff > 0 && increasing == false) {
@@ -41,15 +48,19 @@ int main() {
             }
             else if (diff == 0) {
                 isSafe = false;
+                break;
             }
-            if (abs(diff) <= 1 || abs(diff) >= 3) {
+            if (abs(diff) < 1 || abs(diff) > 3) {
                 isSafe = false;
+                break;
             }
             previous = level.at(i);
         }
         if (isSafe == true) {
             safe++;
         }
+        // cout << line << endl;
+        // cout << isSafe << endl << endl;
         level.clear();
     }
     cout << safe << endl;
